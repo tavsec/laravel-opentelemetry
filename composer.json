@@ -1,0 +1,18 @@
+{
+    "name": "tavsec/laravel-opentelemetry",
+    "description": "Laravel package for OpenTelemetry implementation",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Tavsec\\LaravelOpentelemetry\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Timotej Avsec",
+            "email": "avsectimotej1@gmail.com"
+        }
+    ],
+    "require": {}
+}
