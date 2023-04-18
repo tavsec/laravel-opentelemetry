@@ -16,5 +16,8 @@
     ],
     "require": {
         "open-telemetry/api": "^0.0.17"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^8.0"
     }
 }
