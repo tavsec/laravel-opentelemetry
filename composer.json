@@ -14,5 +14,7 @@
             "email": "avsectimotej1@gmail.com"
         }
     ],
-    "require": {}
+    "require": {
+        "open-telemetry/api": "^0.0.17"
+    }
 }
