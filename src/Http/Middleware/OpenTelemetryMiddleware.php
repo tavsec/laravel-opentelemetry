@@ -23,7 +23,7 @@ class OpenTelemetryMiddleware
             [
                 new SimpleSpanProcessor(
                     new ZipkinExporter(
-                        "zipkin",
+                        config("app.name"),
                         PsrTransportFactory::discover()->create(config("opentelemetry.zipkin_url") . '/api/v2/spans', 'application/json')
                     ),
                 ),
