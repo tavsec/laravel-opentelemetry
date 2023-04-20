@@ -24,7 +24,7 @@ class OpenTelemetryMiddleware
                 new SimpleSpanProcessor(
                     new ZipkinExporter(
                         "zipkin",
-                        PsrTransportFactory::discover()->create('http://zipkin:9411/api/v2/spans', 'application/json')
+                        PsrTransportFactory::discover()->create(config("opentelemetry.zipkin_url") . '/api/v2/spans', 'application/json')
                     ),
                 ),
             ],
@@ -33,9 +33,12 @@ class OpenTelemetryMiddleware
 
         $span = $tracer->spanBuilder($request->url())->startSpan();
         $spanScope = $span->activate();
+
         $r = $next($request);
+
         $span->end();
         $spanScope->detach();
+
         return $r;
     }
 }
