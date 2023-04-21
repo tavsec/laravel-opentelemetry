@@ -9,8 +9,8 @@ This package provides OTEL exporter for Laravel applications.
 - [ ] `Illuminate\Auth\Events\Logout`
 - [ ] `cache:clearing`
 - [ ] `cache:cleared`
-- [ ] `Illuminate\Cache\Events\CacheHit`
-- [ ] `Illuminate\Cache\Events\CacheMissed`
+- [x] `Illuminate\Cache\Events\CacheHit`
+- [x] `Illuminate\Cache\Events\CacheMissed`
 - [ ] `Illuminate\Cache\Events\KeyForgotten`
 - [ ] `Illuminate\Cache\Events\KeyWritten`
 - [ ] `Illuminate\Console\Events\ArtisanStarting`
