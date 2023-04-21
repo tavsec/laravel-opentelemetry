@@ -34,7 +34,10 @@
         "laravel": {
             "providers": [
                 "Tavsec\\LaravelOpentelemetry\\OpenTelemetryServiceProvider"
-            ]
+            ],
+            "aliases": {
+                "OpenTelemetry": "Tavsec\\LaravelOpentelemetry\\Facades\\OpenTelemetry"
+            }
         }
     }
 }

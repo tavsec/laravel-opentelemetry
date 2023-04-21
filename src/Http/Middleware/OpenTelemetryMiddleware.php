@@ -18,6 +18,7 @@ use OpenTelemetry\SDK\Trace\Span;
 use OpenTelemetry\SDK\Trace\SpanProcessor\SimpleSpanProcessor;
 use OpenTelemetry\SDK\Trace\TracerProvider;
 use OpenTelemetry\SemConv\ResourceAttributes;
+use Tavsec\LaravelOpentelemetry\OpenTelemetry;
 
 class OpenTelemetryMiddleware
 {
@@ -46,21 +47,18 @@ class OpenTelemetryMiddleware
 
         Config::set("tracer", $tracer);
 
-        $span = $tracer->spanBuilder("request")->startSpan();
-        $spanScope = $span->activate();
+        $tracing = (new OpenTelemetry)->startSpan("request", [
+            "environment" => config("app.env"),
+            "body" => json_encode($request->all())
+        ]);
 
         $response = $next($request);
 
-        $span->setAttribute("service.name", "test-service");
-        $span->setAttribute("environment", config("app.env"));
-        $span->setAttribute("body", json_encode($request->all()));
-        $span->setStatus($response->isOk() ? StatusCode::STATUS_OK : StatusCode::STATUS_ERROR, "true"  );
+        $tracing->setSpanStatusCode($response->isOk() ? StatusCode::STATUS_OK : StatusCode::STATUS_ERROR);
         if(!$response->isOk()){
-            $span->recordException($response->exception);
+            $tracing->recordException($response->exception);
         }
-
-        $span->end();
-        $spanScope->detach();
+        $tracing->endSpan();
 
         return $response;
     }

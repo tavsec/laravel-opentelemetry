@@ -14,6 +14,9 @@ class OpenTelemetryServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(__DIR__.'/../config/config.php', 'opentelemetry');
         $this->app->register(EventServiceProvider::class);
         $this->app->bind(ExceptionHandler::class, Handler::class);
+        $this->app->bind('opentelemetry', function($app) {
+            return new OpenTelemetry();
+        });
     }
 
     public function boot()

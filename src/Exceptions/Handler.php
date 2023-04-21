@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Config;
 use OpenTelemetry\API\Trace\SpanKind;
 use OpenTelemetry\API\Trace\StatusCode;
 use OpenTelemetry\API\Trace\TracerInterface;
+use Tavsec\LaravelOpentelemetry\OpenTelemetry;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -28,17 +29,16 @@ class Handler extends ExceptionHandler
     public function register()
     {
         $this->reportable(function (Throwable $e) {
-            /** @var TracerInterface|null $tracer */
-            $tracer = Config::get("tracer");
-            if ($tracer) {
 
-                $span = $tracer->spanBuilder("exception")->setSpanKind(SpanKind::KIND_SERVER)->startSpan();
-                $spanScope = $span->activate();
-                $span->setStatus(StatusCode::STATUS_ERROR, "true");
-                $span->recordException($e, $e->getTrace());
-                $span->end();
-                $spanScope->detach();
-            }
+            $tracing = (new OpenTelemetry)->startSpan("exception", [
+                "laravel.exception.message" => $e->getMessage(),
+                "laravel.exception.trace" => json_encode($e->getTrace()),
+                "laravel.exception.file" => $e->getFile(),
+                "laravel.exception.line" => $e->getLine(),
+            ]);
+            $tracing->setSpanStatusCode(StatusCode::STATUS_ERROR);
+            $tracing->recordException($e);
+            $tracing->endSpan();
         });
     }
 }
