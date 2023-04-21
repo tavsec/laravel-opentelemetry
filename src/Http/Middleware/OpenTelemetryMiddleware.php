@@ -4,7 +4,9 @@ namespace Tavsec\LaravelOpentelemetry\Http\Middleware;
 
 use Closure;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Request;
 use OpenTelemetry\API\Trace\SpanKind;
+use OpenTelemetry\API\Trace\StatusCode;
 use OpenTelemetry\Contrib\Zipkin\Exporter as ZipkinExporter;
 use OpenTelemetry\SDK\Common\Attribute\Attributes;
 use OpenTelemetry\SDK\Common\Export\Http\PsrTransportFactory;
@@ -19,7 +21,7 @@ use OpenTelemetry\SemConv\ResourceAttributes;
 
 class OpenTelemetryMiddleware
 {
-    public function handle($request, Closure $next)
+    public function handle(\Illuminate\Http\Request $request, Closure $next)
     {
         $resource = ResourceInfoFactory::merge(ResourceInfo::create(Attributes::create([
             ResourceAttributes::SERVICE_NAME => config("app.name"),
@@ -49,13 +51,10 @@ class OpenTelemetryMiddleware
 
         $response = $next($request);
 
-
         $span->setAttribute("service.name", "test-service");
         $span->setAttribute("environment", config("app.env"));
         $span->setAttribute("body", json_encode($request->all()));
-        $span->setAttribute("status", $response->status());
-        $span->setStatus($response->status());
-
+        $span->setStatus($response->isOk() ? StatusCode::STATUS_OK : StatusCode::STATUS_ERROR, "true"  );
         if(!$response->isOk()){
             $span->recordException($response->exception);
         }

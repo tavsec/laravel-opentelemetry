@@ -17,7 +17,9 @@ class RequestSendingListener
 
             $span = $tracer->spanBuilder("external-request-start")->setSpanKind(SpanKind::KIND_CONSUMER)->startSpan();
             $span->setAttributes([
-                "url" => $event->request->url()
+                "laravel.http.url" => $event->request->url(),
+                "laravel.http.data" => $event->request->data(),
+                "laravel.http.headers" => $event->request->headers()
             ]);
             $spanScope = $span->activate();
             $span->end();
