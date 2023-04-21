@@ -14,10 +14,12 @@ class QueryExecutedListener
     public function handle(QueryExecuted $event){
 
         $tracing = (new OpenTelemetry)->startSpan("query-executed", [
-            "laravel.sql.query" => $event->sql,
-            "laravel.sql.connection" => $event->connectionName,
-            "laravel.sql.bindings" => json_encode($event->bindings),
-        ]);
+            "laravel.query.query" => $event->sql,
+            "laravel.query.duration" => $event->time,
+            "db.system" => $event->connection->getDriverName(),
+            "laravel.query.connection" => $event->connectionName,
+            "laravel.query.bindings" => json_encode($event->bindings),
+        ], SpanKind::KIND_CLIENT);
         $tracing->endSpan();
 
     }

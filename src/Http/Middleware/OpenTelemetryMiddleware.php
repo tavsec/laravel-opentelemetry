@@ -3,6 +3,7 @@
 namespace Tavsec\LaravelOpentelemetry\Http\Middleware;
 
 use Closure;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Request;
 use OpenTelemetry\API\Trace\SpanKind;
@@ -47,9 +48,12 @@ class OpenTelemetryMiddleware
 
         Config::set("tracer", $tracer);
 
-        $tracing = (new OpenTelemetry)->startSpan("request", [
+        $tracing = (new OpenTelemetry)->startSpan($request->method() . " " .$request->path(), [
             "environment" => config("app.env"),
-            "body" => json_encode($request->all())
+            "body" => json_encode($request->all()),
+            "http.method" => $request->method(),
+            "http.route" => $request->path(),
+            "user.id" => Auth::user()?->getAuthIdentifier()
         ]);
 
         $response = $next($request);

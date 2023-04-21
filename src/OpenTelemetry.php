@@ -17,14 +17,10 @@ class OpenTelemetry
         return Config::get("tracer");
     }
 
-    public function info(){
-        return $this;
-    }
-
-    public function startSpan(string $spanName, array $attributes = []){
+    public function startSpan(string $spanName, array $attributes = [], $spanKind = SpanKind::KIND_CONSUMER){
         $tracer = $this->getTracer();
         if ($tracer) {
-            $this->span = $tracer->spanBuilder($spanName)->setSpanKind(SpanKind::KIND_CONSUMER)->startSpan();
+            $this->span = $tracer->spanBuilder($spanName)->setSpanKind($spanKind)->startSpan();
             $this->span->setAttributes($attributes);
             $this->scope = $this->span->activate();
         }

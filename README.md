@@ -14,7 +14,7 @@ This package provides OTEL exporter for Laravel applications.
 - [ ] `Illuminate\Cache\Events\KeyForgotten`
 - [ ] `Illuminate\Cache\Events\KeyWritten`
 - [ ] `Illuminate\Console\Events\ArtisanStarting`
-- [ ] `Illuminate\Database\Events\QueryExecuted`
+- [x] `Illuminate\Database\Events\QueryExecuted`
 - [ ] `Illuminate\Database\Events\TransactionBeginning`
 - [ ] `Illuminate\Database\Events\TransactionCommitted`
 - [ ] `Illuminate\Database\Events\TransactionRolledBack`
