@@ -1,4 +1,4 @@
 <?php
 return [
-    "zipkin_url" => env("OPENTELEMETRY_ZIPKIN_URL", "http://zipkin:9411"),
+    "url" => env("OPENTELEMETRY_URL", "http://localhost:9411"),
 ];
