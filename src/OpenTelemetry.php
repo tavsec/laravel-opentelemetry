@@ -28,6 +28,11 @@ class OpenTelemetry
         return $this;
     }
 
+    public function setAttribute($key, $value){
+        $this->span->setAttribute($key, $value);
+        return $this;
+    }
+
     public function setSpanStatusCode(string $statusCode = StatusCode::STATUS_OK){
         $this->span->setStatus($statusCode, true);
         return $this;

@@ -57,6 +57,7 @@ class OpenTelemetryMiddleware
         ]);
 
         $response = $next($request);
+        $tracing->setAttribute("http.status_code", $response->status());
 
         $tracing->setSpanStatusCode($response->isOk() ? StatusCode::STATUS_OK : StatusCode::STATUS_ERROR);
         if(!$response->isOk()){

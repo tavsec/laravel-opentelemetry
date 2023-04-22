@@ -12,7 +12,7 @@ use Tavsec\LaravelOpentelemetry\OpenTelemetry;
 class RequestSendingListener
 {
     public function handle(RequestSending $event){
-        $tracing = (new OpenTelemetry)->startSpan("external-request-start", [
+        $tracing = (new OpenTelemetry)->startSpan($event->request->method() . " " . $event->request->url(), [
             "laravel.http.url" => $event->request->url(),
             "laravel.http.data" => $event->request->data(),
             "laravel.http.headers" => $event->request->headers()
