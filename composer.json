@@ -17,7 +17,6 @@
     "require": {
         "open-telemetry/api": "^0.0.17",
         "open-telemetry/sdk": "^0.0.17",
-        "symfony/http-client": "^6.2",
         "guzzlehttp/promises": "^1.5",
         "php-http/message-factory": "^1.1",
         "open-telemetry/exporter-zipkin": "^0.0.17"
