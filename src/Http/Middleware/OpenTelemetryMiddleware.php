@@ -48,12 +48,13 @@ class OpenTelemetryMiddleware
 
         Config::set("tracer", $tracer);
 
+        $auth = Auth::user();
         $tracing = (new OpenTelemetry)->startSpan($request->method() . " " .$request->path(), [
             "environment" => config("app.env"),
             "body" => json_encode($request->all()),
             "http.method" => $request->method(),
             "http.route" => $request->path(),
-            "user.id" => Auth::user()?->getAuthIdentifier()
+            "user.id" => $auth ? $auth->getAuthIdentifier() : null
         ]);
 
         $response = $next($request);
