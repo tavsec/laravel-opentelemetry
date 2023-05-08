@@ -13,6 +13,13 @@ class OpenTelemetry
 {
     private array $span;
     private array $scope;
+
+    public function __construct()
+    {
+        $this->span = [];
+        $this->scope = [];
+    }
+
     public function getTracer(): ?TracerInterface {
         return Config::get("tracer");
     }
@@ -39,17 +46,23 @@ class OpenTelemetry
     }
 
     public function setAttribute($key, $value){
-        $this->getLastSpan()->setAttribute($key, $value);
+        $lastSpan = $this->getLastSpan();
+        if($lastSpan)
+            $lastSpan->setAttribute($key, $value);
         return $this;
     }
 
     public function setSpanStatusCode(string $statusCode = StatusCode::STATUS_OK){
-        $this->getLastSpan()->setStatus($statusCode, true);
+        $lastSpan = $this->getLastSpan();
+        if($lastSpan)
+            $lastSpan->setStatus($statusCode, true);
         return $this;
     }
 
     public function recordException(\Throwable $exception){
-        $this->getLastSpan()->recordException($exception, $exception->getTrace());
+        $lastSpan = $this->getLastSpan();
+        if($lastSpan)
+            $lastSpan->recordException($exception, $exception->getTrace());
         return $this;
     }
 
@@ -63,8 +76,8 @@ class OpenTelemetry
         return $this;
     }
 
-    private function getLastSpan(): SpanInterface
+    private function getLastSpan(): ?SpanInterface
     {
-        return $this->span[count($this->span) - 1];
+        return count($this->span) > 1 ? $this->span[count($this->span) - 1] : null;
     }
 }
