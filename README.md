@@ -12,3 +12,7 @@ protected $middleware = [
     OpenTelemetryMiddleware::class
 ];
 ```
+## Current reports 
+- Cache hit/miss
+- Request parameters
+- Eloquent queries
