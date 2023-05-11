@@ -12,6 +12,19 @@ protected $middleware = [
     OpenTelemetryMiddleware::class
 ];
 ```
+
+### Additional metrics/spans
+```php
+        $tracing = (new OpenTelemetry)->startSpan("<SPAN-NAME>", [
+            "att1" => "foo",
+            "att2" => "bar"
+        ]);
+        
+        sleep(200);
+        
+        $tracing->endSpan();
+```
+
 ## Current reports 
 - Cache hit/miss
 - Request parameters
