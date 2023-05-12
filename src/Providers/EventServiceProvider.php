@@ -20,7 +20,6 @@ use Tavsec\LaravelOpentelemetry\Listeners\ScheduledTaskFinishedListener;
 class EventServiceProvider extends ServiceProvider
 {
     protected $listen = [
-        RequestSending::class => [RequestSendingListener::class],
         QueryExecuted::class => [QueryExecutedListener::class],
         CacheHit::class => [CacheHitListener::class],
         CacheMissed::class => [CacheMissedListener::class],
