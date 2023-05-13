@@ -8,7 +8,7 @@ use Tavsec\LaravelOpentelemetry\OpenTelemetry;
 class CacheHitListener
 {
     public function handle(CacheHit $event){
-        $tracing = (new OpenTelemetry)->startSpan("cache-hit", [
+        $tracing = (new OpenTelemetry)->startSpan("cache-hit " . $event->key, [
             "laravel.cache-hit.key" => $event->key,
             "laravel.cache-hit.value" => json_encode($event->value),
         ]);

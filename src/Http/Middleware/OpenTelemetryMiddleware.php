@@ -19,6 +19,7 @@ use OpenTelemetry\SDK\Trace\Span;
 use OpenTelemetry\SDK\Trace\SpanProcessor\SimpleSpanProcessor;
 use OpenTelemetry\SDK\Trace\TracerProvider;
 use OpenTelemetry\SemConv\ResourceAttributes;
+use Symfony\Component\HttpFoundation\Response;
 use Tavsec\LaravelOpentelemetry\OpenTelemetry;
 
 class OpenTelemetryMiddleware
@@ -49,7 +50,8 @@ class OpenTelemetryMiddleware
         Config::set("tracer", $tracer);
 
         $auth = Auth::user();
-        $tracing = (new OpenTelemetry)->startSpan($request->method() . " " .$request->path(), [
+        $tracing = new OpenTelemetry();
+        $tracing = $tracing->startSpan($request->method() . " " .$request->path(), [
             "environment" => config("app.env"),
             "body" => json_encode($this->maskBodyParameters($request->all())),
             "http.headers" => json_encode($this->maskHeaderParameters($request->headers->all())),
@@ -58,8 +60,12 @@ class OpenTelemetryMiddleware
             "user.id" => $auth ? $auth->getAuthIdentifier() : null
         ]);
 
+        /**
+         * @var Response $response
+         */
         $response = $next($request);
-        $tracing->setAttribute("http.status_code", $response->status());
+        $tracing->setAttribute("http.status_code", $response->getStatusCode());
+        $tracing->setAttribute("http.response", $response->getContent());
 
         $tracing->setSpanStatusCode($response->isOk() ? StatusCode::STATUS_OK : StatusCode::STATUS_ERROR);
         if(!$response->isOk()){

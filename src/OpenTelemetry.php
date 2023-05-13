@@ -76,7 +76,9 @@ class OpenTelemetry
     public function setAttribute($key, $value)
     {
         $lastSpan = $this->getLastSpan();
-        if ($lastSpan) $lastSpan->setAttribute($key, Str::limit($value, config("opentelemetry.attribute_length_limit"), ""));
+        if ($lastSpan) {
+            $lastSpan->setAttribute($key, Str::limit($value, config("opentelemetry.attribute_length_limit"), ""));
+        };
         return $this;
     }
 
