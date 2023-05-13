@@ -51,7 +51,8 @@ class OpenTelemetryMiddleware
         $auth = Auth::user();
         $tracing = (new OpenTelemetry)->startSpan($request->method() . " " .$request->path(), [
             "environment" => config("app.env"),
-            "body" => json_encode($request->all()),
+            "body" => json_encode($this->maskBodyParameters($request->all())),
+            "http.headers" => json_encode($this->maskHeaderParameters($request->headers->all())),
             "http.method" => $request->method(),
             "http.route" => $request->path(),
             "user.id" => $auth ? $auth->getAuthIdentifier() : null
@@ -68,5 +69,18 @@ class OpenTelemetryMiddleware
         $tracing->endSpan();
 
         return $response;
+    }
+
+    private function maskBodyParameters(array $body){
+        return collect($body)->mapWithKeys(function ($el, $key){
+            return [$key => OpenTelemetry::maskValue($key, $el)];
+        });
+    }
+    private function maskHeaderParameters(array $headers){
+        return collect($headers)->map(function ($el, $key){
+            return collect($el)->map(function ($el) use ($key){
+                return OpenTelemetry::maskValue($key, $el);
+            });
+        });
     }
 }
