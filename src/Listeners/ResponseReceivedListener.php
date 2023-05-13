@@ -16,7 +16,7 @@ class ResponseReceivedListener
             "laravel.http.request.headers" => $event->request->headers(),
             "laravel.http.request.body" => $event->request->data(),
             "laravel.http.response.headers" => $event->response->headers(),
-            "laravel.http.response.body" => Str::limit($event->response->body(), 4095, ""),
+            "laravel.http.response.body" => $event->response->body(),
             "laravel.http.response.status" => $event->response->status(),
         ], (int) $start->getPreciseTimestamp() * 1_000);
         $tracing->endSpan((int) $end->getPreciseTimestamp() * 1_000);
