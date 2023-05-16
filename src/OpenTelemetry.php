@@ -39,6 +39,8 @@ class OpenTelemetry
      */
     public function getTracer(): ?TracerInterface
     {
+        if(!config("opentelemetry.enabled"))
+            return null;
         return Config::get("tracer");
     }
 
