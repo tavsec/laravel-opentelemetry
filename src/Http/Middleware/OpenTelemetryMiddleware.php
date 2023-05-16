@@ -35,7 +35,7 @@ class OpenTelemetryMiddleware
         ])), ResourceInfoFactory::defaultResource());
 
         $spanProcessor = null;
-        if(config("opentelemetry.url") === SimpleSpanProcessor::class){
+        if(config("opentelemetry.span_processor") === SimpleSpanProcessor::class){
             $spanProcessor =
                 new SimpleSpanProcessor(
                     new ZipkinExporter(
@@ -43,7 +43,7 @@ class OpenTelemetryMiddleware
                         PsrTransportFactory::discover()->create(config("opentelemetry.url"), 'application/json')
                     ),
                 );
-        }else if(config("opentelemetry.url") === BatchSpanProcessor::class){
+        }else if(config("opentelemetry.span_processor") === BatchSpanProcessor::class){
             $spanProcessor = (new BatchSpanProcessorBuilder(
                 new ZipkinExporter(
                     config("app.name") . " (" . config("app.env") . ")",
