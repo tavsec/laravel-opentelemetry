@@ -16,6 +16,8 @@ use OpenTelemetry\SDK\Resource\ResourceInfoFactory;
 use OpenTelemetry\SDK\Trace\RandomIdGenerator;
 use OpenTelemetry\SDK\Trace\Sampler\AlwaysOnSampler;
 use OpenTelemetry\SDK\Trace\Span;
+use OpenTelemetry\SDK\Trace\SpanProcessor\BatchSpanProcessor;
+use OpenTelemetry\SDK\Trace\SpanProcessor\BatchSpanProcessorBuilder;
 use OpenTelemetry\SDK\Trace\SpanProcessor\SimpleSpanProcessor;
 use OpenTelemetry\SDK\Trace\TracerProvider;
 use OpenTelemetry\SemConv\ResourceAttributes;
@@ -25,19 +27,34 @@ class OpenTelemetryMiddleware
 {
     public function handle(\Illuminate\Http\Request $request, Closure $next)
     {
+        if(!config("opentelemetry.enabled"))
+            return $next($request);
         $resource = ResourceInfoFactory::merge(ResourceInfo::create(Attributes::create([
             ResourceAttributes::SERVICE_NAME => config("app.name"),
             ResourceAttributes::DEPLOYMENT_ENVIRONMENT => config("app.env"),
         ])), ResourceInfoFactory::defaultResource());
 
-        $tracer = (new TracerProvider(
-            [
+        $spanProcessor = null;
+        if(config("opentelemetry.url") === SimpleSpanProcessor::class){
+            $spanProcessor =
                 new SimpleSpanProcessor(
                     new ZipkinExporter(
                         config("app.name") . " (" . config("app.env") . ")",
                         PsrTransportFactory::discover()->create(config("opentelemetry.url"), 'application/json')
                     ),
+                );
+        }else if(config("opentelemetry.url") === BatchSpanProcessor::class){
+            $spanProcessor = (new BatchSpanProcessorBuilder(
+                new ZipkinExporter(
+                    config("app.name") . " (" . config("app.env") . ")",
+                    PsrTransportFactory::discover()->create(config("opentelemetry.url"), 'application/json')
                 ),
+            ))->build();
+        }
+
+        $tracer = (new TracerProvider(
+            [
+                $spanProcessor
             ],
             new AlwaysOnSampler(),
             $resource,
