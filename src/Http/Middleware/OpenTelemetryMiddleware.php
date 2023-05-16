@@ -52,7 +52,7 @@ class OpenTelemetryMiddleware
             ))->build();
         }
 
-        $tracer = (new TracerProvider(
+        $tracerProvider = (new TracerProvider(
             [
                 $spanProcessor
             ],
@@ -60,8 +60,8 @@ class OpenTelemetryMiddleware
             $resource,
             null,
             new RandomIdGenerator()
-        ))->getTracer("tracer");
-
+        ));
+        $tracer = $tracerProvider->getTracer("tracer");
 
         Config::set("tracer", $tracer);
 
@@ -84,7 +84,8 @@ class OpenTelemetryMiddleware
                 $tracing->recordException($response->exception);
         }
         $tracing->endSpan();
-
+        if(\config("opentelemetry.flush_batch_on_request"))
+            $tracerProvider->forceFlush();
         return $response;
     }
 
