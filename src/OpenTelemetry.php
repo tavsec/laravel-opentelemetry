@@ -133,7 +133,9 @@ class OpenTelemetry
      */
     private function processAttributes(array $attributes)
     {
-        return collect($attributes)->mapWithKeys(fn($el, $key) => [$key =>  Str::limit($el, config("opentelemetry.attribute_length_limit"), "")])->toArray();
+        return collect($attributes)->mapWithKeys(fn($el, $key) =>
+            [$key =>  Str::limit(is_string($el) ? $el : json_encode($el), config("opentelemetry.attribute_length_limit", 4095), "")]
+        )->toArray();
     }
 
     public static function maskValue($key, $value){
